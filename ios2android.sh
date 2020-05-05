@@ -25,10 +25,14 @@ function float_eval()
 {
     local stat=0
     local result=0.0
-    if [[ $# -gt 0 ]]; then
+    if [[ $# -gt 0 ]]
+    then
         result=$(echo "scale=$float_scale; $*" | bc -q 2>/dev/null)
         stat=$?
-        if [[ $stat -eq 0  &&  -z "$result" ]]; then stat=1; fi
+        if [[ $stat -eq 0  &&  -z "$result" ]]
+        then
+            stat=1
+        fi
     fi
     echo $result
     return $stat
@@ -57,13 +61,15 @@ mkdir drawable-large-hdpi
 mkdir drawable-large-xhdpi
 
 for ii in *.jpg *.png; do 
-    if [ -f $ii ];
+    if [[ -f $ii ]]
     then
-        if [[ ${ii} =~ ~ipad ]]; then
+        if [[ ${ii} =~ ~ipad ]]
+        then
             x=${ii/@2x~ipad./.}
             x=${x/-/_}
 
-            if [[ ${x} =~ ^[0-9] ]]; then
+            if [[ ${x} =~ ^[0-9] ]]
+            then
                 x="img_${x}"
             fi
 
@@ -74,7 +80,8 @@ for ii in *.jpg *.png; do
             convert -resize 75% $ii drawable-large-hdpi/$x
             convert -resize 112.5% $ii drawable-large-xhdpi/$x 
 
-            if [ $# -gt "0" ]; then
+            if [[ $# -gt "0" ]]
+            then
                 # if a parameter is specified, use it as a 
                 #  pre-scaling value to create images targeted 
                 #  for phones
@@ -89,14 +96,18 @@ for ii in *.jpg *.png; do
                 convert -resize $xhdpi% $ii drawable-xhdpi/$x 
                 convert -resize $xxhdpi% $ii drawable-xxhdpi/$x 
             fi
-        elif [[ ${ii} =~ @3x ]]; then
+        elif [[ ${ii} =~ @3x ]]
+        then
             x=${ii/@3x./.}
-            if [[ ${x} =~ -568h ]]; then
+            if [[ ${x} =~ -568h ]]
+            then
                 x=${x/-568h./.}
             fi
+
             x=${x//-/_}
 
-            if [[ ${x} =~ ^[0-9] ]]; then
+            if [[ ${x} =~ ^[0-9] ]]
+            then
                 x="img_${x}"
             fi
 
@@ -109,12 +120,14 @@ for ii in *.jpg *.png; do
             cp $ii drawable-xxhdpi/$x
         else
             x=${ii/@2x./.}
-            if [[ ${x} =~ -568h ]]; then
+            if [[ ${x} =~ -568h ]]
+            then
                 x=${x/-568h./.}
             fi
             x=${x//-/_}
 
-            if [[ ${x} =~ ^[0-9] ]]; then
+            if [[ ${x} =~ ^[0-9] ]]
+            then
                 x="img_${x}"
             fi
 
