@@ -1,21 +1,24 @@
 #!/bin/bash
 
-# ios2android - a simple script to port iOS retina images to the appropriate Android density buckets
+# ios2android - a simple script to port iOS retina images to
+#  the appropriate Android density buckets
 
-# For more information: https://github.com/Ninjanetic/ios2android
+# For more information: 
+#  https://github.com/Ninjanetic/ios2android
 
 # Requires Imagemagick
-# To install on Mac: brew install imagemagick
+#  To install on Mac: brew install imagemagick
 
-# Floating point number functions from http://www.linuxjournal.com/content/floating-point-math-bash
+# Floating point number functions from: 
+#  http://www.linuxjournal.com/content/floating-point-math-bash
 
-#####################################################################
+############################################################
 # Default scale used by float functions.
 
 float_scale=2
 
 
-#####################################################################
+############################################################
 # Evaluate a floating point number expression.
 
 function float_eval()
@@ -31,7 +34,7 @@ function float_eval()
     return $stat
 }
 
-#####################################################################
+############################################################
 # Process images.
 
 rm -rf drawable-ldpi
@@ -72,7 +75,9 @@ for ii in *.jpg *.png; do
             convert -resize 112.5% $ii drawable-large-xhdpi/$x 
 
             if [ $# -gt "0" ]; then
-                # if a parameter is specified, use it as a pre-scaling value to create images targeted for phones
+                # if a parameter is specified, use it as a 
+                #  pre-scaling value to create images targeted 
+                #  for phones
                 ldpi=$(float_eval "37.5 * ${1}")
                 mdpi=$(float_eval "50 * ${1}")
                 hdpi=$(float_eval "75 * ${1}")
