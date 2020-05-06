@@ -60,25 +60,25 @@ mkdir drawable-large-mdpi
 mkdir drawable-large-hdpi
 mkdir drawable-large-xhdpi
 
-for ii in *.jpg *.png; do 
-    if [[ -f $ii ]]
+for existingFile in *.jpg *.png; do 
+    if [[ -f $existingFile ]]
     then
-        if [[ ${ii} =~ ~ipad ]]
+        if [[ ${existingFile} =~ ~ipad ]]
         then
-            x=${ii/@2x~ipad./.}
-            x=${x/-/_}
+            newFile=${existingFile/@2x~ipad./.}
+            newFile=${newFile/-/_}
 
-            if [[ ${x} =~ ^[0-9] ]]
+            if [[ ${newFile} =~ ^[0-9] ]]
             then
-                x="img_${x}"
+                newFile="img_${newFile}"
             fi
 
-            x=`echo $x | tr "[:upper:]" "[:lower:]"`
-            echo $ii 
-            convert -resize 37.5% $ii drawable-large-ldpi/$x
-            convert -resize 50% $ii drawable-large-mdpi/$x
-            convert -resize 75% $ii drawable-large-hdpi/$x
-            convert -resize 112.5% $ii drawable-large-xhdpi/$x 
+            newFile=`echo $newFile | tr "[:upper:]" "[:lower:]"`
+            echo $existingFile 
+            convert -resize 37.5% $existingFile drawable-large-ldpi/$newFile
+            convert -resize 50% $existingFile drawable-large-mdpi/$newFile
+            convert -resize 75% $existingFile drawable-large-hdpi/$newFile
+            convert -resize 112.5% $existingFile drawable-large-xhdpi/$newFile 
 
             if [[ $# -gt "0" ]]
             then
@@ -90,53 +90,53 @@ for ii in *.jpg *.png; do
                 hdpi=$(float_eval "75 * ${1}")
                 xhdpi=$(float_eval "112.5 * ${1}")
                 xxhdpi=$(float_eval "150 * ${1}")
-                convert -resize $ldpi% $ii drawable-ldpi/$x
-                convert -resize $mdpi% $ii drawable-mdpi/$x
-                convert -resize $hdpi% $ii drawable-hdpi/$x
-                convert -resize $xhdpi% $ii drawable-xhdpi/$x 
-                convert -resize $xxhdpi% $ii drawable-xxhdpi/$x 
+                convert -resize $ldpi% $existingFile drawable-ldpi/$newFile
+                convert -resize $mdpi% $existingFile drawable-mdpi/$newFile
+                convert -resize $hdpi% $existingFile drawable-hdpi/$newFile
+                convert -resize $xhdpi% $existingFile drawable-xhdpi/$newFile 
+                convert -resize $xxhdpi% $existingFile drawable-xxhdpi/$newFile 
             fi
-        elif [[ ${ii} =~ @3x ]]
+        elif [[ ${existingFile} =~ @3x ]]
         then
-            x=${ii/@3x./.}
-            if [[ ${x} =~ -568h ]]
+            newFile=${existingFile/@3x./.}
+            if [[ ${newFile} =~ -568h ]]
             then
-                x=${x/-568h./.}
+                newFile=${newFile/-568h./.}
             fi
 
-            x=${x//-/_}
+            newFile=${newFile//-/_}
 
-            if [[ ${x} =~ ^[0-9] ]]
+            if [[ ${newFile} =~ ^[0-9] ]]
             then
-                x="img_${x}"
+                newFile="img_${newFile}"
             fi
 
-            x=`echo $x | tr "[:upper:]" "[:lower:]"`
-            echo $ii
-            convert -resize 25% $ii drawable-ldpi/$x
-            convert -resize 33% $ii drawable-mdpi/$x
-            convert -resize 50% $ii drawable-hdpi/$x
-            convert -resize 66.6% $ii drawable-xhdpi/$x
-            cp $ii drawable-xxhdpi/$x
+            newFile=`echo $newFile | tr "[:upper:]" "[:lower:]"`
+            echo $existingFile
+            convert -resize 25% $existingFile drawable-ldpi/$newFile
+            convert -resize 33% $existingFile drawable-mdpi/$newFile
+            convert -resize 50% $existingFile drawable-hdpi/$newFile
+            convert -resize 66.6% $existingFile drawable-xhdpi/$newFile
+            cp $existingFile drawable-xxhdpi/$newFile
         else
-            x=${ii/@2x./.}
-            if [[ ${x} =~ -568h ]]
+            newFile=${existingFile/@2x./.}
+            if [[ ${newFile} =~ -568h ]]
             then
-                x=${x/-568h./.}
+                newFile=${newFile/-568h./.}
             fi
-            x=${x//-/_}
+            newFile=${newFile//-/_}
 
-            if [[ ${x} =~ ^[0-9] ]]
+            if [[ ${newFile} =~ ^[0-9] ]]
             then
-                x="img_${x}"
+                newFile="img_${newFile}"
             fi
 
-            x=`echo $x | tr "[:upper:]" "[:lower:]"`
-            echo $ii
-            convert -resize 37.5% $ii drawable-ldpi/$x
-            convert -resize 50% $ii drawable-mdpi/$x
-            convert -resize 75% $ii drawable-hdpi/$x
-            cp $ii drawable-xhdpi/$x 
+            newFile=`echo $newFile | tr "[:upper:]" "[:lower:]"`
+            echo $existingFile
+            convert -resize 37.5% $existingFile drawable-ldpi/$newFile
+            convert -resize 50% $existingFile drawable-mdpi/$newFile
+            convert -resize 75% $existingFile drawable-hdpi/$newFile
+            cp $existingFile drawable-xhdpi/$newFile 
         fi
     fi
 done
