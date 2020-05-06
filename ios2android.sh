@@ -51,7 +51,7 @@ for existingFile in *.jpg *.png  # any file or dir match
 do 
     if [[ -f "$existingFile" ]]  # exists and is a regular file
     then
-        echo "[ios2android] processing $PWD/$existingFile"
+        echo "[ios2android] processing ./$existingFile"
         if [[ "$existingFile" =~ ~ipad ]]  # case-insensitive match
         then
             newFile="${existingFile/@2x~ipad./.}"  # remove @2x~ipad
@@ -64,13 +64,12 @@ do
 
             newFile="$(echo "$newFile" | tr "[:upper:]" "[:lower:]")"  # to lower-case
 
-            convert -resize 37.5% "$existingFile" drawable-large-ldpi/$newFile
-            convert -resize 50% "$existingFile" drawable-large-mdpi/$newFile
-            convert -resize 75% "$existingFile" drawable-large-hdpi/$newFile
-            convert -resize 112.5% "$existingFile" drawable-large-xhdpi/$newFile 
+            convert -resize 37.5% "$existingFile" "drawable-large-ldpi/$newFile"
+            convert -resize 50% "$existingFile" "drawable-large-mdpi/$newFile"
+            convert -resize 75% "$existingFile" "drawable-large-hdpi/$newFile"
+            convert -resize 112.5% "$existingFile" "drawable-large-xhdpi/$newFile"
 
-            TODO - refactor this to not rely on arg $1
-            
+            # TODO - refactor this to not rely on arg $1
             if [[ $# -gt "0" ]]  # count of args > 0 ?
             then
                # if a parameter is specified, use it as a 
