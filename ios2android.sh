@@ -12,9 +12,9 @@ float_eval () {
     then
         calcResult=$(echo "scale=$decimalPrecision; $*" | bc -q 2>/dev/null)
         calcExitCode=$? # exit code of preceding statement
-        if [[ $stat -eq 0  &&  -z "$calcResult" ]]
+        if [[ $calcExitCode -eq 0  &&  -z "$calcResult" ]] # result was 0
         then
-            stat=1
+            calcExitCode=1
         fi
     fi
     echo $calcResult
