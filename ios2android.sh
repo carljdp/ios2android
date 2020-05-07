@@ -38,6 +38,8 @@ else
 fi
 echo -e "\n[ios2android] --- START ---"
 
+main () {
+
 echo "[ios2android] remove output directories"
 rm -rf drawable-ldpi
 rm -rf drawable-mdpi
@@ -82,23 +84,23 @@ do
             convert -resize 75% "$existingFile" "drawable-large-hdpi/$newFile"
             convert -resize 112.5% "$existingFile" "drawable-large-xhdpi/$newFile"
 
-            # TODO - refactor this to not rely on arg $1
-            if [[ $# -gt "0" ]]  # count of args > 0 ?
-            then
-               # if a parameter is specified, use it as a 
-               #  pre-scaling value to create images targeted 
-               #  for phones
-               ldpi="$( float_eval "37.5 * ${1}" )"
-               mdpi="$( float_eval "50 * ${1}" )"
-               hdpi="$( float_eval "75 * ${1}" )"
-               xhdpi="$( float_eval "112.5 * ${1}" )"
-               xxhdpi="$( float_eval "150 * ${1}" )"
-               convert -resize "$ldpi%" "$existingFile" "drawable-ldpi/$newFile"
-               convert -resize "$mdpi%" "$existingFile" "drawable-mdpi/$newFile"
-               convert -resize "$hdpi%" "$existingFile" "drawable-hdpi/$newFile"
-               convert -resize "$xhdpi%" "$existingFile" "drawable-xhdpi/$newFile"
-               convert -resize "$xxhdpi%" "$existingFile" "drawable-xxhdpi/$newFile"
-            fi
+                # # TODO - refactor this to not rely on arg $1
+                # if [[ $# -gt "0" ]]  # count of args > 0 ?
+                # then
+                #    # if a parameter is specified, use it as a 
+                #    #  pre-scaling value to create images targeted 
+                #    #  for phones
+                #    ldpi="$( float_eval "37.5 * ${1}" )"
+                #    mdpi="$( float_eval "50 * ${1}" )"
+                #    hdpi="$( float_eval "75 * ${1}" )"
+                #    xhdpi="$( float_eval "112.5 * ${1}" )"
+                #    xxhdpi="$( float_eval "150 * ${1}" )"
+                #    convert -resize "$ldpi%" "$existingFile" "drawable-ldpi/$newFile"
+                #    convert -resize "$mdpi%" "$existingFile" "drawable-mdpi/$newFile"
+                #    convert -resize "$hdpi%" "$existingFile" "drawable-hdpi/$newFile"
+                #    convert -resize "$xhdpi%" "$existingFile" "drawable-xhdpi/$newFile"
+                #    convert -resize "$xxhdpi%" "$existingFile" "drawable-xxhdpi/$newFile"
+                # fi
 
         elif [[ "$existingFile" =~ @3x ]]  # case-sensitive match
         then
@@ -145,5 +147,10 @@ do
         fi
     fi
 done
+}
+
+# R U N
+
+main
 
 echo -e "[ios2android] ---- END ----\n"
