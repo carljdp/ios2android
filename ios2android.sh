@@ -23,6 +23,19 @@ float_eval () {
 
 # M A I N 
 
+if [[ -d "${1:-.}" ]]
+then
+    readonly absInputDir="$( realpath "${1:-'.'}" )"
+else
+    echo "Invalid input dir: $1" && exit 1
+fi
+
+if [[ -d "${2:-.}" ]]
+then
+    readonly absOutputDir="$( realpath "${2:-'.'}" )"
+else
+    echo "Invalid output dir: $2" && exit 1
+fi
 echo -e "\n[ios2android] --- START ---"
 
 echo "[ios2android] remove output directories"
