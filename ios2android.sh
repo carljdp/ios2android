@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# F U N C S
+#===========================================================
+# F U N C T I O N   D E L A R A T I O N S
 
 # Evaluate a floating point number expression.
 float_eval () {
@@ -135,7 +136,9 @@ main () {
     done
 }
 
-# M A I N 
+#===========================================================
+# M A I N   S C R I P T
+
 
 if [[ -d "${1:-.}" ]]
 then
