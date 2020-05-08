@@ -140,6 +140,11 @@ main () {
 # M A I N   S C R I P T
 
 
+# debug start
+set -x
+
+# $1 Input Directory
+#  must be emty or a valid dir
 if [[ -d "${1:-.}" ]]
 then
     declare -g -r absInputDir="$( realpath "${1:-.}" )"
@@ -147,6 +152,8 @@ else
     echo "Invalid input dir: $1" && exit 1
 fi
 
+# $2 Output Directory
+#  must be emty or a valid dir
 if [[ -d "${2:-.}" ]]
 then
     declare -g -r absOutputDir="$( realpath "${2:-.}" )"
@@ -154,9 +161,15 @@ else
     echo "Invalid output dir: $2" && exit 1
 fi
 
-# R U N
+declare -g -r absThisScriptDir="$( realpath "$0" )"
+# debug end
+set +x
+
 echo -e "\n[ios2android] --- START ---"
 
 ios2android
+
+# temp out
+#ios2android
 
 echo -e "[ios2android] ---- END ----\n"
