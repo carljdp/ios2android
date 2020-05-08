@@ -21,6 +21,8 @@ float_eval () {
     return $calcExitCode
 }
 
+# Original main script converting all images in current dir
+ios2android () {
 
 main () {
 
@@ -152,6 +154,6 @@ fi
 # R U N
 echo -e "\n[ios2android] --- START ---"
 
-main
+ios2android
 
 echo -e "[ios2android] ---- END ----\n"
