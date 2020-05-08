@@ -142,14 +142,14 @@ main () {
 
 if [[ -d "${1:-.}" ]]
 then
-    declare -g -r absInputDir="$( realpath "${1:-'.'}" )"
+    declare -g -r absInputDir="$( realpath "${1:-.}" )"
 else
     echo "Invalid input dir: $1" && exit 1
 fi
 
 if [[ -d "${2:-.}" ]]
 then
-    declare -g -r absOutputDir="$( realpath "${2:-'.'}" )"
+    declare -g -r absOutputDir="$( realpath "${2:-.}" )"
 else
     echo "Invalid output dir: $2" && exit 1
 fi
