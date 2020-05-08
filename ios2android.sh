@@ -169,6 +169,12 @@ echo -e "\n[ios2android] --- START ---"
 
 ios2android
 
+# print all sub dirs containing jpg or png files
+echo "$( find "$absInputDir" -type f -printf '%h/%f\n' )" \
+    | egrep -i "\.(jpg|png)$" \
+    | sed -E "s/(^.*\/).*\.(jpg|png)$/\\1/" \
+    | sort -u \
+    | uniq -u
 # temp out
 #ios2android
 
