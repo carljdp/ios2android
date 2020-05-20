@@ -31,7 +31,7 @@ function_processImageFile () {
 
     if [[ -f "$f_currentInputWorkingDir/$f_existingFile" ]]  # exists and is a regular file
     then
-        echo -e "[ios2android] Processing: $f_existingFile"
+        echo -e "[ios2android] Processing: $f_currentInputWorkingDir/$f_existingFile"
 
         if [[ "$f_existingFile" =~ '~ipad' ]]  # case-insensitive match
         then
@@ -237,26 +237,6 @@ function_processImageDir () {
     typeset -r f_currentInputWorkingDir="$f_absInputTopDir/$f_relativeWorkingDir"
     typeset -r f_currentOutputWorkingDir="$f_absOutputTopDir/$f_relativeWorkingDir"
 
-    # # if current dir is leftover output from previous run
-    # if [[ "$f_currentOutputWorkingDir" =~ '\/drawable-.*[lmh]{1}dpi$' ]]
-    # then
-    #     rm -rf "$f_currentOutputWorkingDir"
-    #     echo "[ios2android] Remove and skip: ./$f_relativeWorkingDir"
-    #     return
-    # fi
-
-    # #echo "[ debug-log ] Remove existing Android dirs in: ./$f_relativeWorkingDir"
-    # # remove all output dirs, in case the input changed
-    # #  since the previous run time this script ran
-    # rm -rf "$f_currentOutputWorkingDir/drawable-ldpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-mdpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-hdpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-xhdpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-xxhdpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-large-ldpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-large-mdpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-large-hdpi"
-    # rm -rf "$f_currentOutputWorkingDir/drawable-large-xhdpi"
 
     #echo "[ debug-log ] Recreate . . .  Android dirs in: ./$f_relativeWorkingDir"
     # re-create all output dirs, in case the input changed
