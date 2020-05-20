@@ -180,11 +180,11 @@ function_processImageDir () {
     if [[ "$f_currentOutputWorkingDir" =~ '\/drawable-.*[lmh]{1}dpi$' ]]
     then
         rm -rf "$f_currentOutputWorkingDir"
-        echo echo "[ios2android] Remove existing Android dirs in: ./$f_relativeWorkingDir"
+        echo echo "[ debug-log ] Remove existing Android dirs in: ./$f_relativeWorkingDir"
         return
     fi
 
-    echo "[ios2android] Remove existing Android dirs in: ./$f_relativeWorkingDir"
+    echo "[ debug-log ] Remove existing Android dirs in: ./$f_relativeWorkingDir"
     # remove all output dirs, in case the input changed
     #  since the previous run time this script ran
     rm -rf "$f_currentOutputWorkingDir/drawable-ldpi"
@@ -197,9 +197,7 @@ function_processImageDir () {
     rm -rf "$f_currentOutputWorkingDir/drawable-large-hdpi"
     rm -rf "$f_currentOutputWorkingDir/drawable-large-xhdpi"
 
-    
-
-    echo "[ios2android] Recreate . . .  Android dirs in: ./$f_relativeWorkingDir"
+    echo "[ debug-log ] Recreate . . .  Android dirs in: ./$f_relativeWorkingDir"
     # re-create all output dirs, in case the input changed
     #  since the previous run time this script ran
     mkdir -p "$f_currentOutputWorkingDir/drawable-ldpi"
@@ -212,7 +210,8 @@ function_processImageDir () {
     mkdir -p "$f_currentOutputWorkingDir/drawable-large-hdpi"
     mkdir -p "$f_currentOutputWorkingDir/drawable-large-xhdpi"
 
-    return
+    # uncomment here if your are trying to get rid of nested android folders
+    #return
 
     # find images and process
     echo "$( find "$f_currentInputWorkingDir" -type f -maxdepth 1 -printf '%P\n' )" \
