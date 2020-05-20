@@ -246,8 +246,8 @@ main () {
     ###\n ios2android [OPT OPTARG] [FILE]\n
 
     # Init final args to defaults
-    typeset -g ARG_inputDir="."
-    typeset -g ARG_outputDir="."
+    typeset ARG_inputDir="."
+    typeset ARG_outputDir="."
     typeset errCount=0
 
     OPTERR=0  # don't let getopts handle errors
@@ -329,16 +329,12 @@ main () {
         exit 1
     fi
 
-
     echo -e "[ios2android] > START processing files"
 
-
-    typeset -g -r GLO_absInputTopDir="$( realpath "$ARG_inputDir")"
+    typeset -r GLO_absInputTopDir="$( realpath "$ARG_inputDir")"
     echo "[ debug-log ] GLO_absInputTopDir: $GLO_absInputTopDir"
-    typeset -g -r GLO_absOutputTopDir="$( realpath "$ARG_outputDir")"
+    typeset -r GLO_absOutputTopDir="$( realpath "$ARG_outputDir")"
     echo "[ debug-log ] GLO_absOutputTopDir: $GLO_absOutputTopDir"
-
-    exit 0
 
     # print all sub dirs containing jpg or png files
     echo "$( find "$ARG_inputDir" -type f -printf '%P\n' )" \
@@ -347,7 +343,6 @@ main () {
         | sort -u \
         | uniq -u \
         | pipable_function_processImageDir "$GLO_absInputTopDir" "$GLO_absOutputTopDir"
-
 
     echo -e "[ios2android] > FINISHED processing files"
 }
