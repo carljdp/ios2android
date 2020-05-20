@@ -2,8 +2,7 @@
 # Specific
 
 # Sample files used for testing
-input
-output
+.test-content.d
 
 # deleloper scratch pads
 *.scratch

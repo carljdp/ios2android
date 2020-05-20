@@ -246,10 +246,9 @@ main () {
     # TripleHashComment for help file
     ###\n ios2android [OPT OPTARG] [FILE]\n
 
-
-    # ARGUMENTS passed to this script (defaults)
-    typeset -g ARG_inputDir="./input"
-    typeset -g ARG_outputDir="./output"
+    # Init final args to defaults
+    typeset -g ARG_inputDir="."
+    typeset -g ARG_outputDir="."
     typeset errCount=0
 
 
