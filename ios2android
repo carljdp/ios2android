@@ -25,20 +25,20 @@ float_eval () {
 # Process image (all sizes)
 function_processImageFile () {
 
-    set -x -e
-
     typeset -r f_currentInputWorkingDir="$1"
     typeset -r f_currentOutputWorkingDir="$2"
     typeset -r f_existingFile="$3"
 
     if [[ -f "$f_currentInputWorkingDir/$f_existingFile" ]]  # exists and is a regular file
     then
-        if [[ "$f_existingFile" =~ ~ipad ]]  # case-insensitive match
+        echo -e "[ios2android] Processing: $f_existingFile"
+
+        if [[ "$f_existingFile" =~ '~ipad' ]]  # case-insensitive match
         then
-            local f_newFile="${f_existingFile/'@2x~ipad.'/'.'}"  # remove @2x~ipad
+            local f_newFile="${f_existingFile/'@2x~ipad.'/.}"  # remove @2x~ipad
 
             f_newFile="${f_newFile/-/_}"  # replace - with _
-            if [[ "$f_newFile" =~ ^[0-9] ]]  # regex starts with digit
+            if [[ "$f_newFile" =~ '^[0-9]' ]]  # regex starts with digit
             then
                 f_newFile="img_$f_newFile"  # prefix with img_
             fi
@@ -82,17 +82,17 @@ function_processImageFile () {
             #        "$f_currentOutputWorkingDir/drawable-xxhdpi/$f_newFile"
             # fi
 
-        elif [[ "$f_existingFile" =~ @3x ]]  # case-sensitive match
+        elif [[ "$f_existingFile" =~ '@3x' ]]  # case-sensitive match
         then
-            local f_newFile="${f_existingFile/'@3x.'/'.'}"  # remove @3x
+            local f_newFile="${f_existingFile/'@3x.'/.}"  # remove @3x
 
-            if [[ "$f_newFile" =~ -568h ]]  # contains
+            if [[ "$f_newFile" =~ '-568h' ]]  # contains
             then
                 f_newFile="${f_newFile/-568h./.}"  # remove -568h
             fi
 
             f_newFile="${f_newFile//-/_}"  # replace all - with _
-            if [[ "$f_newFile" =~ ^[0-9] ]]  # starts with digit
+            if [[ "$f_newFile" =~ '^[0-9]' ]]  # starts with digit
             then
                 f_newFile="img_$f_newFile"  # prefix with img_
             fi
@@ -114,15 +114,15 @@ function_processImageFile () {
             cp "$f_currentInputWorkingDir/$f_existingFile" \
                 "$f_currentOutputWorkingDir/drawable-xxhdpi/$f_newFile"  # copy original
         else
-            local f_newFile="${f_existingFile/'@2x.'/'.'}"  # remove @2x
+            local f_newFile="${f_existingFile/'@2x.'/.}"  # remove @2x
 
-            if [[ "$f_newFile" =~ -568h ]]  # contains
+            if [[ "$f_newFile" =~ '-568h' ]]  # contains
             then
                 f_newFile="${f_newFile/-568h./.}"  # remove -568h
             fi
 
             f_newFile="${f_newFile//-/_}"  # replace all - with _
-            if [[ "$f_newFile" =~ ^[0-9] ]]  # starts with digit
+            if [[ "$f_newFile" =~ '^[0-9]' ]]  # starts with digit
             then
                 f_newFile="img_$f_newFile"  # prefix with img_
             fi
@@ -150,13 +150,14 @@ pipable_function_processImageFile () {
     if [[ "$#" -eq "2" ]] # stdin is 3rd arg
     then
         typeset stdinLine
-        while IFS= read -es stdinLine
+        while IFS= read -s -u 0 stdinLine
         do
             function_processImageFile "$@" "$stdinLine"
         done
 
     elif [[ "$#" -eq "3" ]] # ignore stdin
     then
+        echo "tried processing $@" && exit 1
         function_processImageFile "$@"
 
     else
@@ -175,6 +176,15 @@ function_processImageDir () {
     typeset -r f_currentInputWorkingDir="$f_absInputTopDir/$f_relativeWorkingDir"
     typeset -r f_currentOutputWorkingDir="$f_absOutputTopDir/$f_relativeWorkingDir"
 
+    # if current dir is leftover output from previous run
+    if [[ "$f_currentOutputWorkingDir" =~ '\/drawable-.*[lmh]{1}dpi$' ]]
+    then
+        rm -rf "$f_currentOutputWorkingDir"
+        echo echo "[ios2android] Remove existing Android dirs in: ./$f_relativeWorkingDir"
+        return
+    fi
+
+    echo "[ios2android] Remove existing Android dirs in: ./$f_relativeWorkingDir"
     # remove all output dirs, in case the input changed
     #  since the previous run time this script ran
     rm -rf "$f_currentOutputWorkingDir/drawable-ldpi"
@@ -186,6 +196,10 @@ function_processImageDir () {
     rm -rf "$f_currentOutputWorkingDir/drawable-large-mdpi"
     rm -rf "$f_currentOutputWorkingDir/drawable-large-hdpi"
     rm -rf "$f_currentOutputWorkingDir/drawable-large-xhdpi"
+
+    
+
+    echo "[ios2android] Recreate . . .  Android dirs in: ./$f_relativeWorkingDir"
     # re-create all output dirs, in case the input changed
     #  since the previous run time this script ran
     mkdir -p "$f_currentOutputWorkingDir/drawable-ldpi"
@@ -197,6 +211,8 @@ function_processImageDir () {
     mkdir -p "$f_currentOutputWorkingDir/drawable-large-mdpi"
     mkdir -p "$f_currentOutputWorkingDir/drawable-large-hdpi"
     mkdir -p "$f_currentOutputWorkingDir/drawable-large-xhdpi"
+
+    return
 
     # find images and process
     echo "$( find "$f_currentInputWorkingDir" -type f -maxdepth 1 -printf '%P\n' )" \
@@ -211,7 +227,7 @@ pipable_function_processImageDir () {
     if [[ "$#" -eq "2" ]] # stdin is 3rd arg
     then
         typeset stdinLine
-        while IFS= read -es stdinLine
+        while IFS= read -s -u 0 stdinLine
         do
             function_processImageDir "$@" "$stdinLine"
         done
@@ -249,6 +265,7 @@ main () {
     typeset ARG_inputDir="."
     typeset ARG_outputDir="."
     typeset errCount=0
+    typeset verbose=false
 
     OPTERR=0  # don't let getopts handle errors
     OPTIND=1  # reset getopt index incase it was already used
@@ -266,8 +283,7 @@ main () {
                 exit 1
                 ;;
             v ) ### _-v_Verbose logging.
-                echo "[ios2android] :( sorry, option -v is not implemented yet" >&2
-                exit 1
+                verbose=true
                 ;;
             i ) ### _-i_Input root directory (trailing slash optional).
                 ARG_inputDir="$OPTARG"
@@ -332,9 +348,9 @@ main () {
     echo -e "[ios2android] > START processing files"
 
     typeset -r GLO_absInputTopDir="$( realpath "$ARG_inputDir")"
-    echo "[ debug-log ] GLO_absInputTopDir: $GLO_absInputTopDir"
+    $verbose && echo "[ debug-log ] GLO_absInputTopDir: $GLO_absInputTopDir"
     typeset -r GLO_absOutputTopDir="$( realpath "$ARG_outputDir")"
-    echo "[ debug-log ] GLO_absOutputTopDir: $GLO_absOutputTopDir"
+    $verbose && echo "[ debug-log ] GLO_absOutputTopDir: $GLO_absOutputTopDir"
 
     # print all sub dirs containing jpg or png files
     echo "$( find "$ARG_inputDir" -type f -printf '%P\n' )" \
