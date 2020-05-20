@@ -166,6 +166,67 @@ pipable_function_processImageFile () {
     fi
 }
 
+
+# Process directory (all images)
+function_clean () {
+    # function args to local vars; remove trailing slash
+    typeset -r f_absInputTopDir="${1%/}"
+    typeset -r f_absOutputTopDir="${2%/}"
+    typeset -r f_relativeWorkingDir="${3%/}"
+
+    typeset -r f_currentInputWorkingDir="$f_absInputTopDir/$f_relativeWorkingDir"
+    typeset -r f_currentOutputWorkingDir="$f_absOutputTopDir/$f_relativeWorkingDir"
+
+    # if current dir is an Android folder
+    if [[ "$f_currentOutputWorkingDir" =~ '\/drawable-.*[lmh]{1}dpi$' ]]
+    then # remove it with contents
+        rm -rf "$f_currentOutputWorkingDir"
+        echo "[ios2android] Remove and skip: ./$f_relativeWorkingDir"
+
+        # return nothing original (dir was removed)
+        echo ""
+        return
+
+    else # remove possible subfolders
+        #echo "[ debug-log ] Remove existing Android dirs in: ./$f_relativeWorkingDir"
+        rm -rf "$f_currentOutputWorkingDir/drawable-ldpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-mdpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-hdpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-xhdpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-xxhdpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-large-ldpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-large-mdpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-large-hdpi"
+        rm -rf "$f_currentOutputWorkingDir/drawable-large-xhdpi"
+
+        # return original 
+        echo "$3"
+        return
+    fi
+}
+
+# Make pipe-able function
+pipable_function_clean () {
+
+    if [[ "$#" -eq "2" ]] # stdin is 3rd arg
+    then
+        typeset stdinLine
+        while IFS= read -s -u 0 stdinLine
+        do
+            function_clean "$@" "$stdinLine"
+        done
+
+    elif [[ "$#" -eq "3" ]] # ignore stdin
+    then
+        function_clean "$@"
+
+    else
+        echo "$FUNCNAME expected 3 args (2 when piped)" >&2
+        exit 1
+    fi
+}
+
+
 # Process directory (all images)
 function_processImageDir () {
     # function args to local vars; remove trailing slash
@@ -176,28 +237,28 @@ function_processImageDir () {
     typeset -r f_currentInputWorkingDir="$f_absInputTopDir/$f_relativeWorkingDir"
     typeset -r f_currentOutputWorkingDir="$f_absOutputTopDir/$f_relativeWorkingDir"
 
-    # if current dir is leftover output from previous run
-    if [[ "$f_currentOutputWorkingDir" =~ '\/drawable-.*[lmh]{1}dpi$' ]]
-    then
-        rm -rf "$f_currentOutputWorkingDir"
-        echo echo "[ debug-log ] Remove existing Android dirs in: ./$f_relativeWorkingDir"
-        return
-    fi
+    # # if current dir is leftover output from previous run
+    # if [[ "$f_currentOutputWorkingDir" =~ '\/drawable-.*[lmh]{1}dpi$' ]]
+    # then
+    #     rm -rf "$f_currentOutputWorkingDir"
+    #     echo "[ios2android] Remove and skip: ./$f_relativeWorkingDir"
+    #     return
+    # fi
 
-    echo "[ debug-log ] Remove existing Android dirs in: ./$f_relativeWorkingDir"
-    # remove all output dirs, in case the input changed
-    #  since the previous run time this script ran
-    rm -rf "$f_currentOutputWorkingDir/drawable-ldpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-mdpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-hdpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-xhdpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-xxhdpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-large-ldpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-large-mdpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-large-hdpi"
-    rm -rf "$f_currentOutputWorkingDir/drawable-large-xhdpi"
+    # #echo "[ debug-log ] Remove existing Android dirs in: ./$f_relativeWorkingDir"
+    # # remove all output dirs, in case the input changed
+    # #  since the previous run time this script ran
+    # rm -rf "$f_currentOutputWorkingDir/drawable-ldpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-mdpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-hdpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-xhdpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-xxhdpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-large-ldpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-large-mdpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-large-hdpi"
+    # rm -rf "$f_currentOutputWorkingDir/drawable-large-xhdpi"
 
-    echo "[ debug-log ] Recreate . . .  Android dirs in: ./$f_relativeWorkingDir"
+    #echo "[ debug-log ] Recreate . . .  Android dirs in: ./$f_relativeWorkingDir"
     # re-create all output dirs, in case the input changed
     #  since the previous run time this script ran
     mkdir -p "$f_currentOutputWorkingDir/drawable-ldpi"
@@ -210,8 +271,6 @@ function_processImageDir () {
     mkdir -p "$f_currentOutputWorkingDir/drawable-large-hdpi"
     mkdir -p "$f_currentOutputWorkingDir/drawable-large-xhdpi"
 
-    # uncomment here if your are trying to get rid of nested android folders
-    #return
 
     # find images and process
     echo "$( find "$f_currentInputWorkingDir" -type f -maxdepth 1 -printf '%P\n' )" \
@@ -357,7 +416,8 @@ main () {
         | sed -E "s/^(.*\/).*\.(jpg|png)$/\\1/" \
         | sort -u \
         | uniq -u \
-        | pipable_function_processImageDir "$GLO_absInputTopDir" "$GLO_absOutputTopDir"
+        | pipable_function_clean "$GLO_absInputTopDir" "$GLO_absOutputTopDir" | awk NF \
+        | pipable_function_processImageDir "$GLO_absInputTopDir" "$GLO_absOutputTopDir" \
 
     echo -e "[ios2android] > FINISHED processing files"
 }
