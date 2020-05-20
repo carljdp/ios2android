@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/zsh
 
 #===========================================================
 # F U N C T I O N   D E L A R A T I O N S
@@ -238,112 +238,118 @@ printTripleHashComments () {
 #===========================================================
 # M A I N   S C R I P T
 
+main () {
 
-echo -e "[ios2android] > INIT"
-
-
-# TripleHashComment for help file
-###\n ios2android [OPT OPTARG] [FILE]\n
+    echo -e "[ios2android] > INIT"
 
 
-# ARGUMENTS passed to this script (defaults)
-typeset -g ARG_inputDir="./input"
-typeset -g ARG_outputDir="./output"
-typeset errCount=0
+    # TripleHashComment for help file
+    ###\n ios2android [OPT OPTARG] [FILE]\n
 
 
-OPTERR=0  # don't let getopts handle errors
-OPTIND=1  # reset getopt index incase it was already used
-while getopts ":hli:o:" opt
-do
-    case $opt in
-        l ) ### _-l_List input directories containing images 
-            echo "-l NOT IMPLEMENTED" >&2
-            ;;
-        i ) ### _-i_Input root directory (trailing slash optional).
-            ARG_inputDir="$OPTARG"
-            ;;
-        o ) ### _-o_Output root directory (trailing slash optional).
-            ARG_outputDir="$OPTARG"
-            ;;
-        v ) ### _-v_Verbose logging.
-            echo "-l NOT IMPLEMENTED" >&2
-            ;;
-        h ) ### _-h_Display help.
-            printTripleHashComments
-            exit 0
-            ;;
-        \?)
-            echo "Invalid option: $OPTARG" >&2
-            errCount=$((errCount+1))
-            ;;
-        : )
-            echo "Required argument not found: $OPTARG " >&2
-            errCount=$((errCount+1))
-            ;;
-    esac
-done
-# `getopts` does not autoshift like `getopt`
-# Discard all options and sentinel `--`
-shift "$((OPTIND-1))"
-# Now "$@" contains only args
+    # ARGUMENTS passed to this script (defaults)
+    typeset -g ARG_inputDir="./input"
+    typeset -g ARG_outputDir="./output"
+    typeset errCount=0
 
 
-# TripleHashComment ###\n End of help file.\n
+    OPTERR=0  # don't let getopts handle errors
+    OPTIND=1  # reset getopt index incase it was already used
+    while getopts ":hli:o:" opt
+    do
+        case $opt in
+            l ) ### _-l_List input directories containing images 
+                echo "-l NOT IMPLEMENTED" >&2
+                ;;
+            i ) ### _-i_Input root directory (trailing slash optional).
+                ARG_inputDir="$OPTARG"
+                ;;
+            o ) ### _-o_Output root directory (trailing slash optional).
+                ARG_outputDir="$OPTARG"
+                ;;
+            v ) ### _-v_Verbose logging.
+                echo "-l NOT IMPLEMENTED" >&2
+                ;;
+            h ) ### _-h_Display help.
+                printTripleHashComments
+                exit 0
+                ;;
+            \?)
+                echo "Invalid option: $OPTARG" >&2
+                errCount=$((errCount+1))
+                ;;
+            : )
+                echo "Required argument not found: $OPTARG " >&2
+                errCount=$((errCount+1))
+                ;;
+        esac
+    done
+    # `getopts` does not autoshift like `getopt`
+    # Discard all options and sentinel `--`
+    shift "$((OPTIND-1))"
+    # Now "$@" contains only args
 
 
-# Exit if preceding OPTS checks failed
-if [[ "$errCount" -gt 0 ]]
-then
-    echo "  ..for help run $0 -h"
-    exit 1
-fi
+    # TripleHashComment ###\n End of help file.\n
 
 
-# TODO - move into a validator function
-if [[ -d "$ARG_inputDir" ]]
-then
-    echo "[ debug-log ] Input directory: $ARG_inputDir"
-else
-    echo "Can't find output directory: $ARG_inputDir" >&2
-    errCount=$((errCount+1))
-fi
+    # Exit if preceding OPTS checks failed
+    if [[ "$errCount" -gt 0 ]]
+    then
+        echo "  ..for help run $0 -h"
+        exit 1
+    fi
 
 
-# TODO - move into a validator function
-if [[ -d "$ARG_outputDir" ]]
-then
-    echo "[ debug-log ] Output directory: $ARG_outputDir"
-else
-    echo "Can't find output directory: $ARG_outputDir" >&2
-    errCount=$((errCount+1))
-fi
+    # TODO - move into a validator function
+    if [[ -d "$ARG_inputDir" ]]
+    then
+        echo "[ debug-log ] Input directory: $ARG_inputDir"
+    else
+        echo "Can't find output directory: $ARG_inputDir" >&2
+        errCount=$((errCount+1))
+    fi
 
 
-# Exit if preceding ARGS checks failed
-if [[ "$errCount" -gt 0 ]]
-then
-    echo "  ..for help run $0 -h"
-    exit 1
-fi
+    # TODO - move into a validator function
+    if [[ -d "$ARG_outputDir" ]]
+    then
+        echo "[ debug-log ] Output directory: $ARG_outputDir"
+    else
+        echo "Can't find output directory: $ARG_outputDir" >&2
+        errCount=$((errCount+1))
+    fi
 
 
-echo -e "[ios2android] > START processing of files"
+    # Exit if preceding ARGS checks failed
+    if [[ "$errCount" -gt 0 ]]
+    then
+        echo "  ..for help run $0 -h"
+        exit 1
+    fi
 
 
-typeset -g -r GLO_absInputTopDir="$( realpath "$ARG_inputDir")"
-echo "[ debug-log ] GLO_absInputTopDir: $GLO_absInputTopDir"
-typeset -g -r GLO_absOutputTopDir="$( realpath "$ARG_outputDir")"
-echo "[ debug-log ] GLO_absOutputTopDir: $GLO_absOutputTopDir"
+    echo -e "[ios2android] > START processing of files"
 
 
-# print all sub dirs containing jpg or png files
-echo "$( find "$ARG_inputDir" -type f -printf '%P\n' )" \
-    | egrep -i "\.(jpg|png)$" \
-    | sed -E "s/^(.*\/).*\.(jpg|png)$/\\1/" \
-    | sort -u \
-    | uniq -u \
-    | pipable_function_processImageDir "$GLO_absInputTopDir" "$GLO_absOutputTopDir"
+    typeset -g -r GLO_absInputTopDir="$( realpath "$ARG_inputDir")"
+    echo "[ debug-log ] GLO_absInputTopDir: $GLO_absInputTopDir"
+    typeset -g -r GLO_absOutputTopDir="$( realpath "$ARG_outputDir")"
+    echo "[ debug-log ] GLO_absOutputTopDir: $GLO_absOutputTopDir"
 
 
-echo -e "[ios2android] > FINISHED processing of files"
+    # print all sub dirs containing jpg or png files
+    echo "$( find "$ARG_inputDir" -type f -printf '%P\n' )" \
+        | egrep -i "\.(jpg|png)$" \
+        | sed -E "s/^(.*\/).*\.(jpg|png)$/\\1/" \
+        | sort -u \
+        | uniq -u \
+        | pipable_function_processImageDir "$GLO_absInputTopDir" "$GLO_absOutputTopDir"
+
+
+    echo -e "[ios2android] > FINISHED processing of files"
+}
+
+#===========================================================
+# R U N
+main "$@"
