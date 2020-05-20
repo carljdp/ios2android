@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 
 #===========================================================
-# F U N C T I O N   D E L A R A T I O N S
+# F U N C T I O N   D E C L A R A T I O N S
 
 # Evaluate a floating point number expression.
 float_eval () {
@@ -229,7 +229,7 @@ pipable_function_processImageDir () {
 # Print all comments from this file containing 3 hashes
 printTripleHashComments () {
     typeset -r tab='    '
-    echo -e "$( cat "$0" | egrep -o "#{3}.*" \
+    echo -e "$( cat "$1" | egrep -o "#{3}.*" \
         | sed -E "s/#{3}//g" \
         | sed -E "s/_/$tab/g" \
     )"
@@ -242,7 +242,6 @@ main () {
 
     echo -e "[ios2android] > INIT"
 
-
     # TripleHashComment for help file
     ###\n ios2android [OPT OPTARG] [FILE]\n
 
@@ -251,14 +250,24 @@ main () {
     typeset -g ARG_outputDir="."
     typeset errCount=0
 
-
     OPTERR=0  # don't let getopts handle errors
     OPTIND=1  # reset getopt index incase it was already used
-    while getopts ":hli:o:" opt
+    while getopts ":hlvi:o:" opt
     do
         case $opt in
+            h ) ### _-h_Display help.
+                setopt POSIX_ARGZERO
+                printTripleHashComments "$0"
+                setopt POSIX_ARGZERO
+                exit 0
+                ;;
             l ) ### _-l_List input directories containing images 
-                echo "-l NOT IMPLEMENTED" >&2
+                echo "[ios2android] :( sorry, option -l is not implemented yet" >&2
+                exit 1
+                ;;
+            v ) ### _-v_Verbose logging.
+                echo "[ios2android] :( sorry, option -v is not implemented yet" >&2
+                exit 1
                 ;;
             i ) ### _-i_Input root directory (trailing slash optional).
                 ARG_inputDir="$OPTARG"
@@ -266,13 +275,7 @@ main () {
             o ) ### _-o_Output root directory (trailing slash optional).
                 ARG_outputDir="$OPTARG"
                 ;;
-            v ) ### _-v_Verbose logging.
-                echo "-l NOT IMPLEMENTED" >&2
-                ;;
-            h ) ### _-h_Display help.
-                printTripleHashComments
-                exit 0
-                ;;
+
             \?)
                 echo "Invalid option: $OPTARG" >&2
                 errCount=$((errCount+1))
@@ -288,17 +291,16 @@ main () {
     shift "$((OPTIND-1))"
     # Now "$@" contains only args
 
-
     # TripleHashComment ###\n End of help file.\n
-
 
     # Exit if preceding OPTS checks failed
     if [[ "$errCount" -gt 0 ]]
     then
+        setopt POSIX_ARGZERO
         echo "  ..for help run $0 -h"
+        setopt NO_POSIX_ARGZERO 
         exit 1
     fi
-
 
     # TODO - move into a validator function
     if [[ -d "$ARG_inputDir" ]]
@@ -309,7 +311,6 @@ main () {
         errCount=$((errCount+1))
     fi
 
-
     # TODO - move into a validator function
     if [[ -d "$ARG_outputDir" ]]
     then
@@ -319,16 +320,17 @@ main () {
         errCount=$((errCount+1))
     fi
 
-
     # Exit if preceding ARGS checks failed
     if [[ "$errCount" -gt 0 ]]
     then
+        setopt POSIX_ARGZERO 
         echo "  ..for help run $0 -h"
+        setopt NO_POSIX_ARGZERO 
         exit 1
     fi
 
 
-    echo -e "[ios2android] > START processing of files"
+    echo -e "[ios2android] > START processing files"
 
 
     typeset -g -r GLO_absInputTopDir="$( realpath "$ARG_inputDir")"
@@ -336,6 +338,7 @@ main () {
     typeset -g -r GLO_absOutputTopDir="$( realpath "$ARG_outputDir")"
     echo "[ debug-log ] GLO_absOutputTopDir: $GLO_absOutputTopDir"
 
+    exit 0
 
     # print all sub dirs containing jpg or png files
     echo "$( find "$ARG_inputDir" -type f -printf '%P\n' )" \
@@ -346,7 +349,7 @@ main () {
         | pipable_function_processImageDir "$GLO_absInputTopDir" "$GLO_absOutputTopDir"
 
 
-    echo -e "[ios2android] > FINISHED processing of files"
+    echo -e "[ios2android] > FINISHED processing files"
 }
 
 #===========================================================
